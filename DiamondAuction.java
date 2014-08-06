@@ -1,9 +1,10 @@
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package AuctionTheDiamonds;
+
 
 import java.util.*;
 
@@ -92,14 +93,7 @@ public class DiamondAuction {
         shuffleTheDeck();
     }
 
-    public void setNoOfPlayers() {
-        
-        int playerCount = 0;
-        while (playerCount != 2 && playerCount != 3) {
-            System.out.print("Enter number of Players: ");
-            playerCount = Integer.parseInt(readInput.nextLine());
-        }
-
+    public void setNoOfPlayers(int playerCount) {
         this.noOfPlayers = playerCount;
         int i = 0;
         while (i < noOfPlayers) {
@@ -107,6 +101,15 @@ public class DiamondAuction {
             Players.add(player);
             ++i;
         }
+    }
+    
+    public void takeNoOfPlayers(){
+    	 int playerCount = 0;
+         while (playerCount != 2 && playerCount != 3) {
+             System.out.print("Enter number of Players: ");
+             playerCount = Integer.parseInt(readInput.nextLine());
+         }
+         setNoOfPlayers(playerCount);
     }
 
     public boolean checkIfValidInput(String input) {
@@ -129,6 +132,7 @@ public class DiamondAuction {
         cardScore.put("2", 2);
     }
 
+    
     public String getUserInput() {
         return readInput.nextLine();
     }
@@ -153,7 +157,7 @@ public class DiamondAuction {
                 bid = getUserInput();
             } while (!legalBid(player, bid));
             updatePlayersHand(player, bid);
-            bids.add("" + cardScore.get(bid));
+            bids.add(bid);
         }
         return bids;
     }
@@ -172,7 +176,7 @@ public class DiamondAuction {
         int[] values = new int[2];
         for (String bid : bids) {
 
-            int value = Integer.parseInt(bid);
+            int value = cardScore.get(bid);
             if (value > maxValue) {
                 maxValue = value;
                 counter = 1;
@@ -202,7 +206,7 @@ public class DiamondAuction {
         int index = 0;
         Player[] player = new Player[counter];
         while (counter > 0) {
-            index = bids.indexOf("" + maxValue);
+            index = bids.indexOf(getCardRep(maxValue));
             bids.set(index, "0");
             Players.get(index).updateScore(value);
             player[counter-1] = Players.get(index);
@@ -212,7 +216,16 @@ public class DiamondAuction {
         return player;
     }
     
-    public void printBidWinners(Player[] player) {
+    private Object getCardRep(int maxValue) {
+		// TODO Auto-generated method stub
+    	for(String key : cardScore.keySet()){
+    		if(cardScore.get(key) == maxValue)
+    			return key;
+    	}
+		return null;
+	}
+
+	public void printBidWinners(Player[] player) {
         System.out.println("Bid Winner(s)");
         for(Player p: player ) {
             System.out.println(p);
@@ -225,6 +238,7 @@ public class DiamondAuction {
             String topCard = displayAndRemoveTopCardOfDeck();
             System.out.println("Players may now place your bids");
             ArrayList<String> bids = readPlayerBids();
+            System.out.println(bids.toString());
             int[] maxBidDetails = findMaxValue(bids);
             int maxValue = maxBidDetails[0];
             int counter = maxBidDetails[1];
@@ -256,7 +270,7 @@ public class DiamondAuction {
     public static void main(String[] args) {
         System.out.println("Welcome to the Diamond Auction");
         DiamondAuction auction = new DiamondAuction();
-        auction.setNoOfPlayers();
+        auction.takeNoOfPlayers();
         auction.startBidding();
         auction.announceWinner();
 
